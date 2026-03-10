@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Inventory</title>
+</head>
+<body>
+<div class="menu fr">
+    <div >
+        <label id="i-portal" class="portal">
+            Inventory
+        </label>
+    </div>
+    <div >
+        <label id="s-portal" class="portal">
+            Sales
+        </label>
+    </div>
+</div>
+<div class="layout fr">
+    <div id="side" class="side">
+        <form id="form">
+            <fieldset form="form" class="filter-section fc">
+                <div class="filter-header fr">
+                    <span>Product Filters</span>
+                    <img class="arrow-icon" src=".\assets\down-arrow.png"/>
+                </div>
+                <div class="filter-content">
+                    <div class="legend">Name</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="name" class="field" placeholder="Name or sku">
+                        </label>
+                    </div>
+                    
+                    <div class="legend">Supplier</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="supplier" class="field" placeholder="Supplier">
+                        </label>
+                    </div>
+                    
+                    <div class="legend">Price</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="price-min" class="field" inputmode="decimal" min="0" type="number" placeholder="Min">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="price-max" class="field" inputmode="decimal" min="0" type="number" placeholder="Max">
+                        </label>
+                    </div>
+
+                    <div class="legend">Last Sold Interval</div>
+                    <div class="fw fw--outline fr">
+                        <span>From</span>
+                        <label class="field-label">
+                            <input id="last-sold-month-min" class="field" type="number" min="1" placeholder="Month">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="last-sold-day-min" class="field" type="number" min="1" placeholder="Day">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="last-sold-year-min" class="field" type="number" min="2017" placeholder="Year">
+                        </label>
+                    </div>
+                        
+                    <div class="fw fw--outline fr">
+                        <span>To</span>
+                        <label class="field-label">
+                            <input id="last-sold-month-max" class="field" type="number" min="1" placeholder="Month">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="last-sold-day-max" class="field" type="number" min="1" placeholder="Day">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="last-sold-year-max" class="field" type="number" min="2017" placeholder="Year">
+                        </label>
+                    </div>
+
+                    <div class="legend">Categories</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="cat1" class="field" placeholder="Cat 1">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="cat2" class="field" placeholder="Cat 2">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="cat3" class="field" placeholder="Cat 3">
+                        </label>
+                    </div>
+
+                    <div class="legend">Count</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="count-min" class="field" type="number" placeholder="Min">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="count-max" class="field" type="number" placeholder="Max">
+                        </label>
+                    </div>
+
+                    <div class="legend">Channel Status</div>
+                    <table class="field-grid">
+                        <thead>
+                            <tr>
+                                <td></td>
+                                <td>Active</td>
+                                <td>Inactive</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>In Store</td>
+                                <td>
+                                    <label class="field-label field-label--check-box fr">
+                                        <input id="in-store-active" type="checkbox" checked="true">
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="field-label field-label--check-box fr">
+                                        <input id="in-store-inactive" type="checkbox">
+                                    </label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Online</td>
+                                <td>
+                                    <label class="field-label field-label--check-box fr">
+                                        <input id="online-active" type="checkbox">
+                                    </label>
+                                </td>
+                                <td>
+                                    <label class="field-label field-label--check-box fr">
+                                        <input id="online-inactive" type="checkbox">
+                                    </label>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+            <fieldset form="form" class="filter-section fc">
+                <div class="filter-header fr">
+                    <span>Sale Filters</span>
+                    <img class="arrow-icon" src=".\assets\down-arrow.png"/>
+                </div>
+                <div class="filter-content">
+                    <div class="legend">Sale Interval</div>
+                    <div class="fw fw--outline fr">
+                        <span>From</span>
+                        <label class="field-label">
+                            <input id="sale-month-min" class="field" type="number" min="1" placeholder="Month">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="sale-day-min" class="field" type="number" min="1" placeholder="Day">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="sale-year-min" class="field" type="number" min="2020" placeholder="Year">
+                        </label>
+                    </div>
+                        
+                    <div class="fw fw--outline fr">
+                        <span>To</span>
+                        <label class="field-label">
+                            <input id="sale-month-max" class="field" type="number" min="1" placeholder="Month">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="sale-day-max" class="field" type="number" min="1" placeholder="Day">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="sale-year-max" class="field" type="number" min="2020" placeholder="Year">
+                        </label>
+                    </div>
+
+                    <div class="legend">Quantity Sold</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="quantity-min" class="field" type="number" placeholder="Min">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="quantity-max" class="field" type="number" placeholder="Max">
+                        </label>
+                    </div>
+
+                    <div class="legend">Revenue</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <input id="revenue-min" class="field" type="number" placeholder="Min">
+                        </label>
+                        <div class="separator"></div>
+                        <label class="field-label">
+                            <input id="revenue-max" class="field" type="number" placeholder="Max">
+                        </label>
+                    </div>
+
+                    <div class="legend">Register</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <select id="register" class="field">
+                                <option value="0266a95f-e549-11ed-e118-59fa69a91e3a">Mobile</option>
+                                <option value="0266a95f-e549-11ed-eb65-14d4ce207991">Online</option>
+                                <option value="0afa8de1-1450-11e7-edec-9a21cffb8e16">Main</option>
+                                <option selected="true">All</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="legend">Interval</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <select id="interval" class="field">
+                                <option value="week">Week</option>
+                                <option value="month">Month</option>
+                                <option value="quarter">Quarter</option>
+                                <option value="year" selected="true">Year</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="legend">Metric</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <select id="metric" class="field">
+                                <option value="quantity">Quantity Sold</option>
+                                <option value="revenue">Revenue</option>
+                            </select>
+                        </label>
+                    </div>
+
+                    <div class="legend">Group By</div>
+                    <div class="fw fw--outline fr">
+                        <label class="field-label">
+                            <select id="grouping" class="field">
+                                <option>Product</option>
+                                <option>Supplier</option>
+                                <option>Register</option>
+                                <option>Category 1</option>
+                                <option>Category 2</option>
+                                <option>Category 3</option>
+                                <option>All</option>
+                            </select>
+                        </label>
+                    </div>
+
+                </div>
+            </fieldset>
+            <fieldset form="form" class="filter-section fc">
+                <div class="filter-header fr">
+                    <span>Preferences</span>
+                    <img class="arrow-icon" src=".\assets\down-arrow.png"/>
+                </div>
+                <div class="filter-content">
+                    <div class="legend">Dot Plot</div>
+                    <div class="fw fw--outline fr">
+                        <span>On/Off</span>
+                        <label class="field-label">
+                            <input checked id="toggle-dot" type="checkbox" class="field">
+                        </label>
+                        <span>Tooltip</span>
+                        <label class="field-label">
+                            <input id="toggle-tip" type="checkbox" class="field">
+                        </label>
+                    </div>
+                    <div class="fw fw--outline fr">
+                        <span>Radius</span>
+                        <label class="field-label">
+                            <input id="radius" class="field" type="number" value="3" min="1" placeholder="Radius">
+                        </label>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="bw fr">
+                <button type="submit">Search</button>
+                <button id="download">Download Table</button>
+            </div>
+            <span id="row-count"></span>
+        </form>
+        <div id="plus-wrapper" class="plus-wrapper">
+            <img id="plus" class="plus-icon" src=".\assets\plus.png"/>
+        </div>
+    </div>
+    <div id="main" class="main">
+        <div id="loading-screen">
+            <div class="spinner"></div>
+        </div>
+        <div style="display: none;" id="s-view"></div>
+        <table id="i-view">
+            <thead>
+            <tr id="product-thr">
+                <th data-type="string">Seller</th>
+                <th data-type="string">Category 2</th>
+                <th data-type="string">Category 3</th>
+                <th data-type="string">Sku</th>
+                <th data-type="string">Name</th>
+                <th data-type="number">Price</th>
+                <th data-type="number">Count</th>
+                <th data-type="bool">In Store</th>
+                <th data-type="bool">Online</th>
+                <th data-type="date">Date Created</th>
+                <th data-type="date" data-except="{'Never': 0}">Last Sold</th>
+                <th data-type="number">Qty Sold</th>
+                <th data-type="number">Revenue</th>
+                <!-- <th data-type="number">Total Discount</th>
+                <th data-type="bool">Taxable</th> -->
+            </tr>
+            </thead>
+            <tbody id="product-tb">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module" src="../src/sort.js"></script>
+<script type="module" src="../src/data.js"></script>
+<script type="module" src="../src/inventory-script.js"></script>
+
+</body>
+</html>
