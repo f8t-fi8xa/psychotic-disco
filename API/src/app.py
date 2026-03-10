@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
+from flask_httpauth import HTTPBasicAuth
 import sqlite3
+from dotenv import load_dotenv
 import os
 from database.LightSpeed import Orders, Products, Sales, Suppliers
 from database.utils import InitializeDB
@@ -9,8 +11,18 @@ db_name = "main"
 db_path = fr"{InitializeDB.DEFAULT_LOC}\{db_name}.db"
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+users = {
+    os.getenv("USER_0"): os.getenv("PASSWORD_0")
+}
+
+@auth.verify_password
+def verify_password(username, password):
+    return username if username in users and users[username] == password else None
 
 @app.post("/api/create")
+@auth.login_required
 def create():
     with sqlite3.connect(db_path) as conn:
         cur = conn.cursor()
@@ -23,6 +35,7 @@ def create():
 
 # update routes
 @app.post("/api/update")
+@auth.login_required
 def update():
     with sqlite3.connect(db_path) as conn:
         Orders(conn).update()
@@ -32,24 +45,28 @@ def update():
     return jsonify({"status": "success"})
 
 @app.post("/api/orders/update")
+@auth.login_required
 def update_orders():
     with sqlite3.connect(db_path) as conn:
         Orders(conn).update()
     return jsonify({"status": "success"})
 
 @app.post("/api/products/update")
+@auth.login_required
 def update_products():
     with sqlite3.connect(db_path) as conn:
         Products(conn).update()
     return jsonify({"status": "success"})
 
 @app.post("/api/sales/update")
+@auth.login_required
 def update_sales():
     with sqlite3.connect(db_path) as conn:
         Sales(conn).update()
     return jsonify({"status": "success"})
 
 @app.post("/api/suppliers/update")
+@auth.login_required
 def update_suppliers():
     with sqlite3.connect(db_path) as conn:
         Suppliers(conn).update()
@@ -58,6 +75,7 @@ def update_suppliers():
 # get routes
 
 @app.post("/api/search")
+@auth.login_required
 def search():
     data = request.get_json()
     
@@ -287,6 +305,7 @@ def search():
         return jsonify([dict(row) for row in product_result])
 
 @app.post("/api/sales/get")
+@auth.login_required
 def get_sales():
     data = request.get_json()
     
@@ -492,6 +511,8 @@ def get_sales():
 
         result = cur.execute(f"WITH sale_interval AS ({make_select(sale_interval)}) {make_select(main_query)}").fetchall()
         return jsonify([dict(row) for row in result])
+    
+application = app
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=False)
