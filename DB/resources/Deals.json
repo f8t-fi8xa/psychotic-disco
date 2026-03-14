@@ -1,0 +1,322 @@
+{
+     "CHIA": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "SHIA": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "COPB": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "COGB": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "LULB": {
+        "seller_type": "artist",
+        "tier": 3,
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "MORC": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "COLC": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "YASC": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "SHAC": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "SURD": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "JEOD": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "CAML": {
+        "seller_type": "artist",
+        "tier": 3,
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "SCOE": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "BESE": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "WALE": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "1FFH": {
+        "seller_type": "nonprofit",
+        "deal_type": "percent",
+        "deal": 0.7
+     },
+     "REMG": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "DAVG": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "KRUG": {
+        "seller_type": "artist",
+        "tags": ["temp"],
+        "tier": null,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "JULG": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "RAYH": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "BABI": {
+        "seller_type": "author",
+        "deal_type": "per_book",
+        "deal": 4
+     },
+     "DOVM": {
+        "seller_type": "artist",
+        "tier": 3,
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "RUBJ": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "CLEJ": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "LEBJ": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "TSAK": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "PERK": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "ALZK": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "1PLF": {
+        "seller_type": "nonprofit",
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "DOLL": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "FASL": {
+        "seller_type": "wholesaler",
+        "tags": ["temp"]
+     },
+     "DECL": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "SEAL": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "MANL": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "PARL": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "1UMA": {
+        "seller_type": "nonprofit",
+        "deal_type": "percent",
+        "deal": 0.8
+     },
+     "CLOM": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.7
+     },
+     "TRAM": {
+        "seller_type": "artist",
+        "tier": 2,
+        "deal_type": "percent",
+        "deal": 0.55
+     },
+     "WALP": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "BEAP": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "1PHH": {
+        "seller_type": "nonprofit",
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "YU_R": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "LAMR": {
+        "seller_type": "author",
+        "deal_type": "per_book",
+        "deal": 12
+     },
+     "CHIR": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "WINR": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "KETR": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "FELS": {
+        "seller_type": "artist",
+        "tier": 4,
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "CAHS": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "1SOW": {
+        "seller_type": "nonprofit",
+        "deal_type": "percent",
+        "deal": 0.33
+     },
+     "ALTS": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "MATT": {
+        "seller_type": "artist",
+        "tier": 3,
+        "deal_type": "percent",
+        "deal": 0.6
+     },
+     "CART": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.65
+     },
+     "LAPY": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "KELV": {
+        "seller_type": "artist",
+        "tier": 1,
+        "deal_type": "percent",
+        "deal": 0.5
+     },
+     "KELT": {
+        "seller_type": "author",
+        "deal_type": "percent",
+        "deal": 0.5
+     }
+}

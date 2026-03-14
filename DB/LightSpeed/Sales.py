@@ -1,5 +1,4 @@
 from . import _Pipe as Pipe
-import sqlite3
 
 sale_request = Pipe.Request("sales")
 
@@ -23,10 +22,14 @@ class Sales:
 
     def update(self, append=True):
         print("Updating sales...")
+
+        self.cur.execute("SELECT cutoff FROM config")
+        c = self.cur.fetchone()
+        cutoff = int(c[0]) if c else 0
         if append:
             self.cur.execute("SELECT version FROM sales ORDER BY version DESC LIMIT 1")
             v = self.cur.fetchone()
-            last_version = v[0] if v is not None else 0
+            last_version = v[0] if v else 0
         else:
             last_version = 0
 
@@ -34,10 +37,10 @@ class Sales:
 
         while len(batch) > 0:
 
-            if Pipe.seconds(batch[-1]["sale_date"]) > Pipe.CUTOFF_DATE:
+            if Pipe.seconds(batch[-1]["sale_date"]) > cutoff:
 
                 for i, sale in enumerate(batch):
-                    if Pipe.seconds(sale["sale_date"]) > Pipe.CUTOFF_DATE:
+                    if Pipe.seconds(sale["sale_date"]) > cutoff:
                         sale_attrs = self._extract_attributes(sale)
                         product_attributes = self._extract_product_attributes(sale)
 

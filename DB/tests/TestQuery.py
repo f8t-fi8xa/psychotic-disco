@@ -28,7 +28,7 @@ cur = conn.cursor()
 
 '''input query here'''
 cur.execute('''
-SELECT * FROM products LIMIT 5
+SELECT * FROM service_items
             ''')
 
 for l in cur.fetchall():

@@ -7,5 +7,3 @@ venv/
 *.db
 node_modules/
 .idea/
-Info.json
-Deals.json

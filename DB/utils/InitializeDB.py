@@ -1,8 +1,3 @@
-import sqlite3
-from database.LightSpeed import Orders, Products, Sales, Suppliers, Registers
-
-DEFAULT_LOC = r"C:\Users\liams\Gallery\DB\resources"
-
 class Database:
 	def __init__(self, conn):
 		self.conn = conn
@@ -199,8 +194,6 @@ class Database:
 		'''
 		)
 		self.conn.commit()
-		Registers(self.conn).update()
-
 
 	def make_tables(self):
 		self.make_orders_table()

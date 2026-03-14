@@ -23,11 +23,15 @@ class Orders:
 
     def update(self, append=True):
         print("Updating orders...")
+        
+        self.cur.execute("SELECT cutoff FROM config")
+        c = self.cur.fetchone()
+        cutoff = int(c[0]) if c else 0
 
         if append:
             self.cur.execute("SELECT version FROM orders ORDER BY version DESC LIMIT 1")
             v = self.cur.fetchone()
-            init_version = v[0] if v is not None else 0
+            init_version = int(v[0]) if v else 0
         else:
             init_version = 0
 
@@ -37,11 +41,11 @@ class Orders:
 
         while len(batch) > 0:
 
-            if Pipe.seconds(batch[len(batch)-1]["consignment_date"]) > Pipe.CUTOFF_DATE:
+            if Pipe.seconds(batch[len(batch)-1]["consignment_date"]) > cutoff:
 
                 for order in batch:
 
-                    if Pipe.seconds(order["consignment_date"]) > Pipe.CUTOFF_DATE:
+                    if Pipe.seconds(order["consignment_date"]) > cutoff:
                         attrs = self._extract_attributes(order)
                         Pipe.put_sql(self.conn, attrs, "orders")
 
@@ -51,7 +55,7 @@ class Orders:
 
             batch = order_request.get(after=last_version)
 
-        self._update_order_products(init_version)
+        self._update_order_products(init_version, cutoff)
 
     ############################
     ## Order Products methods ##
@@ -68,8 +72,8 @@ class Orders:
             })
         return attrs
 
-    def _update_order_products(self, last_version):
-        self.cur.execute(f"SELECT id FROM orders WHERE orders.version > {last_version}")
+    def _update_order_products(self, init_version, cutoff):
+        self.cur.execute("SELECT id FROM orders WHERE version > %s AND date > %s", init_version, cutoff)
         ids = self.cur.fetchall()
 
         for id in ids:

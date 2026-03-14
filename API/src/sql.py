@@ -62,12 +62,14 @@ def _make_end(end):
         direction = order.get("direction", '')
         limit = order.get("limit")
         if fields:
-            end_str += f"\nORDER BY {','.join(fields)}"
+            end_str += f"\nORDER BY {','.join(fields)} {direction}"
         if limit:
-            end_str += f"\n{direction} LIMIT {limit}"
+            end_str += f"\nLIMIT {limit}"
     return end_str
 
 def make_select(query):
+    if not query:
+        return ''
     fields = ",".join([_make_field(field) for field in query["fields"]])
     main_table = _make_table(query['main_table'], main=True)
     joins = "\n".join([_make_table(table) for table in query["tables"]])
@@ -78,62 +80,3 @@ def make_select(query):
     SELECT {fields} FROM {main_table} {joins} WHERE {conditions} {end}
     '''
     return query_str
-
-if __name__ == '__main__':
-    query = {
-        "fields": [
-            {"name": 'grouping_value', "alias": "grouping_value"},
-            {"name": "p.id", "alias": "product_id"},
-            {"func": "SUM", "name": "sp.count", "alias": "quantity"},
-            {"func": "SUM", "name": "sp.discount_total", "alias": "discount"},
-            {"name": "i.count"},
-            {"func": "SUM", "name": "sp.price_total", "alias": "revenue"},
-            {"func": "MAX", "name": "s.date", "alias": "last_sold"},
-        ],
-        "main_table": {"name": "products", "alias": "p"},
-        "tables": [
-            {"name": "sale_products", "alias": "sp", "join_type": "LEFT", "link": ("p.id", "sp.product_id")},
-            {"name": "sales", "alias": "s", "join_type": "LEFT", "link": ("sp.sale_id", "s.id")},
-            {"name": "inventory", "alias": "i", "join_type": "LEFT", "link": ("p.id", "i.product_id")},
-            {"name": "suppliers", "alias": "su", "join_type": "LEFT", "link": ("p.supplier_id", "su.id")},
-        ],
-        "conditions": [
-            {"operator": "OR", "terms": (
-                {"operator": "=", "terms": ("sp.status", 'CONFIRMED')}, 
-                {"operator": "IS", "terms": ("sp.status", "NULL")}
-            )},
-            {"operator": "IS", "terms": ("p.deleted_at", "NULL")},
-            {"operator": "OR", "terms": (
-                {"operator": ">=", "terms": ("s.date", 'date_min')}, 
-                {"operator": "<", "terms": ('date_min', 0)}
-            )},
-            {"operator": "OR", "terms": (
-                {"operator": "<=", "terms": ("s.date", 'date_max')}, 
-                {"operator": "<", "terms": ('date_max', 0)}
-            )},
-            {"operator": ">=", "terms": ("p.price", 'price_min')},
-            {"operator": "<=", "terms": ("p.price", 'price_max')},
-            {"operator": "OR", "terms": (
-                {"operator": "AND", "terms": (
-                    {"operator": ">=", "terms": ("i.count", 'count_min')}, 
-                    {"operator": "<=", "terms": ("i.count", 'count_max')})}, 
-                {"operator": "AND", "terms": [
-                    {"operator": "IS", "terms": ("i.count", "NULL")}, 
-                    {"operator": "<=", "terms": ('count_min', 0)}, 
-                    {"operator": ">=", "terms": ('count_max', 0)}
-        ]}
-            )}
-        ],
-        "end": {
-            "group": [
-                "p.id"
-                ],
-            "order": {
-                "fields": [
-                    "p.id", "s.date"
-                ],
-                "direction": "DESC",
-                "limit": 2
-            }
-        }
-    }
