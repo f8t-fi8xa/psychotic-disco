@@ -1,9 +1,9 @@
-from . import _Pipe as Pipe
+import _Pipe as Pipe
 import json
 
 supplier_request = Pipe.Request("suppliers")
 
-path = r"C:\Users\liams\Gallery\DB\resources\Deals.json"
+path = r"DB\resources\Deals.json"
 with open(path, 'r') as file:
     deals = json.load(file)
 
