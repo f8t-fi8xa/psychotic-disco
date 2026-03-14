@@ -29,6 +29,10 @@ users = {
 def verify_password(username, password):
     return username if username in users and users[username] == password else None
 
+@app.get("/test")
+def test():
+    return 'test'
+
 @app.get("/api/last_updated")
 def last_updated():
     conn = pool.get_connection()
