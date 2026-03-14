@@ -4,7 +4,7 @@ import os
 
 supplier_request = Pipe.Request("suppliers")
 
-with open(os.path.join('DB', 'resources', 'Deals.json'), 'r') as file:
+with open(os.path.join('API', 'resources', 'Deals.json'), 'r') as file:
     deals = json.load(file)
 
 class Suppliers:
