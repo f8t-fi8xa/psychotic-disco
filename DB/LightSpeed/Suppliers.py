@@ -1,4 +1,4 @@
-from . import _Pipe as Pipe
+import _Pipe as Pipe
 import json
 
 supplier_request = Pipe.Request("suppliers")
