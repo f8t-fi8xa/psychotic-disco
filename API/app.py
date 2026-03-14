@@ -3,8 +3,8 @@ from flask_httpauth import HTTPBasicAuth
 from mysql.connector import pooling
 from dotenv import load_dotenv
 import os
-from DB.LightSpeed import Orders, Products, Sales, Suppliers, Registers
-from API.src.sql import make_select
+from LightSpeed import Orders, Products, Sales, Suppliers, Registers
+from utils.sql import make_select
 
 load_dotenv()
 
