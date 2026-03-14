@@ -1,10 +1,10 @@
 from . import _Pipe as Pipe
 import json
+import os
 
 supplier_request = Pipe.Request("suppliers")
 
-path = r"DB\resources\Deals.json"
-with open(path, 'r') as file:
+with open(os.path.join('DB', 'resources', 'Deals.json'), 'r') as file:
     deals = json.load(file)
 
 class Suppliers:
