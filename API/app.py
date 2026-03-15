@@ -118,7 +118,7 @@ def update_suppliers():
     return jsonify({"status": "success"})
 
 @app.post("/api/registers/update")
-#@auth.login_required
+@auth.login_required
 def update_registers():
     conn = pool.get_connection()
     try:
