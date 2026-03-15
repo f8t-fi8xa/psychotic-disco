@@ -30,8 +30,14 @@ def verify_password(username, password):
     return username if username in users and users[username] == password else None
 
 @app.get("/test")
+@auth.login_required
 def test():
     return 'test'
+
+@app.route('/myip')
+def get_ip():
+    import requests
+    return requests.get('https://ifconfig.me').text
 
 @app.get("/api/last_updated")
 def last_updated():
@@ -39,7 +45,9 @@ def last_updated():
     try:
         cur = conn.cursor()
         cur.execute("SELECT last_updated FROM config")
-        return jsonify(cur.fetchone())
+        result = jsonify(cur.fetchall()[0])
+        cur.close()
+        return result
     finally:
         conn.close()
 
@@ -110,7 +118,7 @@ def update_suppliers():
     return jsonify({"status": "success"})
 
 @app.post("/api/registers/update")
-@auth.login_required
+#@auth.login_required
 def update_registers():
     conn = pool.get_connection()
     try:
