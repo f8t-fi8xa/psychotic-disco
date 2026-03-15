@@ -32,7 +32,7 @@ def verify_password(username, password):
 @app.get("/test")
 @auth.login_required
 def test():
-    return 'test'
+    return 'test and more'
 
 @app.route('/myip')
 def get_ip():
