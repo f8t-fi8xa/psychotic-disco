@@ -31,6 +31,11 @@ users = {
 def verify_password(username, password):
     return username if username in users and users[username] == password else None
 
+@app.before_request
+def handle_preflight():
+    if request.method == "OPTIONS":
+        return '', 204
+
 @app.get("/test")
 @auth.login_required
 def test():
