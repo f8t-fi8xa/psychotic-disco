@@ -2,6 +2,8 @@ import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm"
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import {DateTime} from "https://cdn.jsdelivr.net/npm/luxon@3.4.4/+esm";
 
+const API_URL = "http://psychotic-disco-production.up.railway.app"
+
 export function format(input_element, default_value=null, field=null) {
     let input = input_element.value;
     if (default_value && input_element.value == '') input = default_value;
@@ -107,14 +109,14 @@ export class Field {
 }
 
 async function load(endpoint, params) {
-    return (await fetch(`http://localhost:5000/${endpoint}`, {
+    return (await fetch(`${API_URL}/${endpoint}`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(params)
     })).json();
 }
 
-export async function loadTable(params, fieldSet, container) {
+export async function load_table(params, fieldSet, container) {
     const result = await load("api/search", params);
     fieldSet.process(result, container);
 }
@@ -159,7 +161,7 @@ export async function update_cache() {
     return result
 }
 
-export async function loadGraph() {
+export async function load_graph() {
     const result = await update_cache();
     
     let sorted = {};
@@ -242,10 +244,43 @@ export async function loadGraph() {
 
 
 export async function update() {
-    return fetch(`http://localhost:5000/api/update`, {
+    return fetch(`${API_URL}/api/update`, {
         method: "POST",
         headers: {
             "Accept": "application/json"
         }
     })
 };
+
+export function sort_table(table, col) {
+    const data = table.children[0].children[0].children[col].dataset;
+    let tbody = table.children[1];
+    let rows = Array.from(tbody.rows);
+
+    rows.sort((a, b) => {
+        const aText = a.cells[col].innerText;
+        const bText = b.cells[col].innerText;
+        if (!aText) return -1;
+        switch (data.type) {
+            case "string": return aText.localeCompare(bText);
+            case "number": return parseFloat(aText) - parseFloat(bText);
+            case "bool": return aText.localeCompare(bText);
+            case "date": {
+                const aDate = aText.split("/").map(value => parseInt(value));
+                const bDate = bText.split("/").map(value => parseInt(value));
+                
+                const aTime = new Date(aDate[2], aDate[0]-1, aDate[1]).getTime();
+                const bTime = new Date(bDate[2], bDate[0]-1, bDate[1]).getTime();
+                return aTime - bTime;
+            }
+        }
+    });
+
+    if (tbody.getAttribute("sorted") == col) {
+        rows.reverse();
+        tbody.removeAttribute("sorted");
+    }
+    else tbody.setAttribute("sorted", col);
+
+    rows.forEach(row => tbody.appendChild(row));
+}

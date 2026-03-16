@@ -1,6 +1,5 @@
 
-import {format, update, Field, FieldSet, reset_cache, update_parameters, loadTable, loadGraph} from "./data.js";
-import {sortTable} from "./sort.js";
+import {sort_table, format, update, Field, FieldSet, reset_cache, update_parameters, load_table, load_graph} from "./data.js";
 
 const i_portal = document.getElementById("i-portal");
 const sPortal = document.getElementById("s-portal");
@@ -76,13 +75,13 @@ function date_format(day, month, year, type) {
 toggle_dot.addEventListener("change", event => {
     if (toggle_dot.checked) update_parameters({preferences: {radius: +radius.value}});
     else update_parameters({preferences: null});
-    loadGraph();
+    load_graph();
 })
 
 radius.addEventListener("change", event => {
     if (toggle_dot.checked) {
         update_parameters({preferences: {radius: +radius.value}});
-        loadGraph();
+        load_graph();
     }
 })
 
@@ -199,7 +198,7 @@ form.addEventListener("submit", event => {
     ], function() {rowCount.innerText = tbody.children.length + " found";}
 )
 
-    loadTable(params, fieldSet, tbody)
+    load_table(params, fieldSet, tbody)
     const min = date_format(...sale_min, 'min');
     const max = date_format(...sale_max, 'max');
     const start = new Date(min.year, min.month - 1, min.day);
@@ -212,11 +211,11 @@ form.addEventListener("submit", event => {
         end: end.getTime() < 0 ? max_range: end
     });
     reset_cache();
-    loadGraph();
+    load_graph();
 });
 
 document.querySelectorAll("#product-thr th").forEach((th, index) => {
-    th.addEventListener("click", () => sortTable(i_view, index));
+    th.addEventListener("click", () => sort_table(i_view, index));
 });
 
 document.addEventListener("DOMContentLoaded", () => {

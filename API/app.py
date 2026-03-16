@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from flask_httpauth import HTTPBasicAuth
 from mysql.connector import pooling
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ pool = pooling.MySQLConnectionPool(
 )
 
 app = Flask(__name__)
+CORS(app)
 auth = HTTPBasicAuth()
 
 
