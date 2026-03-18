@@ -56,7 +56,7 @@ const plus_wrapper = document.getElementById("plus-wrapper");
 function date_format(day, month, year, type) {
     const min = {day: 1, month: 1, year: 2020};
     const today = new Date();
-    const max = {day: today.getDay(), month: today.getMonth()+1, year: today.getFullYear()};
+    const max = {day: today.getDate(), month: today.getMonth()+1, year: today.getFullYear()};
     let date = {day: day, month: month, year: year};
 
     for (let key in date) {
@@ -64,6 +64,7 @@ function date_format(day, month, year, type) {
             switch (type) {
                 case 'min': date[key] = min[key]; break;
                 case 'max': date[key] = max[key]; break;
+                default: break;
             }
         }
         else if (date[key] < min[key]) date[key] = min[key];
@@ -87,9 +88,9 @@ radius.addEventListener("change", event => {
 
 download.addEventListener("click", event => {
     event.preventDefault();
-    let csv = Array.from(head_tr.children).map(e => e.innerHTML).join(",") + "\n";
+    let csv = Array.from(head_tr.children).map(e => e.textContent).join(",") + "\n";
     for (let row of tbody.children) {
-        csv += Array.from(row.children).map(e => `"${e.innerHTML.replaceAll(/&amp;/g, "&").replaceAll(/"/g, '""')}"`).join(",") + "\n";
+        csv += Array.from(row.children).map(e => `"${e.textContent.replaceAll(/"/g, '""')}"`).join(",") + "\n";
     }
     const blob = new Blob([csv], {type: "text/plain"});
     const url = URL.createObjectURL(blob);
@@ -195,7 +196,7 @@ form.addEventListener("submit", event => {
         new Field("revenue", 'money'), 
         //new Field("discount", 'money'),
         //new Field("tax", 'money')
-    ], function() {rowCount.innerText = tbody.children.length + " found";}
+    ], function() {rowCount.textContent = tbody.children.length + " found";}
 )
 
     load_table(params, fieldSet, tbody)

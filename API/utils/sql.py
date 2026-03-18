@@ -1,82 +1,153 @@
-def check():
-    pass
+import re
 
-def _make_field(field: dict[str, str]):
-    name = field.get("name", '')
-    func = field.get("func")
-    alias = field.get("alias")
+class Field:
+    def __init__(self, field: dict[str, str]):
+        self.name = str(field.get("name", ''))
+        self.func = str(field.get("func", ''))
+        self.alias = str(field.get("alias", ''))
 
-    field_str = name
+        p = '^[a-zA-Z0-9_]*$'
+        alpha_num = re.match(p, self.name) and re.match(p, self.func) and re.match(p, self.alias)
+        if not alpha_num:
+            raise TypeError("Wrong type bud")
 
-    if func:
-        field_str = f"{func}({field_str})"
+    def __repr__(self) -> str:
+        field_str = self.name
 
-    if alias:
-        field_str = f"{field_str} AS {alias}"
-    return field_str
+        if self.func:
+            field_str = f"{self.func}({field_str})"
 
-def _make_table(table, main=False):
-    name = table.get("name", '')
-    alias = table.get("alias")
-    join_type = table.get("join_type")
-    link = table.get("link")
+        if self.alias:
+            field_str = f"{field_str} AS {self.alias}"
+        return field_str
 
-    if main:
-        table_str = name
-    elif join_type:
-        table_str = join_type + " JOIN " + name
-    else:
-        table_str = "JOIN " + name
+class Table:
+    def __init__(self, table: dict, is_main: bool = False):
+        self.name = str(table.get("name", ''))
+        self.alias = str(table.get("alias", ''))
+        self.join_type = str(table.get("join_type", '')).upper()
+        self.link = table.get("link")
+        self.is_main = bool(is_main)
+
+        correct_types = isinstance(self.link, tuple)
+        p = '^[a-z|A-Z|0-9|_]*$'
+        alpha_num_base = re.match(p, self.name) and re.match(p, self.alias) and re.match(p, self.join_type)
+        if is_main:
+            alpha_num = alpha_num_base
+        elif correct_types and len(self.link) == 2:
+            alpha_num = alpha_num_base and re.match(p, self.link[0]) and re.match(p, self.link[1])
+        else:
+            alpha_num = False
+        if not correct_types or not alpha_num:
+            raise TypeError("Wrong type bud")
+
+    def __repr__(self) -> str:
+        if self.is_main:
+            table_str = self.name
+        elif self.join_type:
+            table_str = self.join_type + " JOIN " + self.name
+        else:
+            table_str = "JOIN " + self.name
+            
+        if self.alias:
+            table_str += f" AS {self.alias}"
+
+        if not self.is_main:
+            table_str += f" ON {'='.join(self.link)}"
+
+        return table_str
+
+class Condition:
+    ALLOWED_OPERATORS = {
+    'AND', 'OR',                           # logical
+    '=', '!=', '<', '>', '<=', '>=',       # comparison
+    'IS', 'IS NOT',                        # is
+    'IN', 'NOT IN',                        # in
+    'LIKE', 'NOT LIKE',                    # like
+    'BETWEEN', 'NOT BETWEEN'               # between
+    }
+    FIELDS = {
+
+    }
+    def __init__(self, condition: dict):
+        operator = str(condition.get('operator', '')).upper()
+        self.terms = []
+        self.params = []
+        init_terms = condition.get("terms")
+
+        correct_types = operator in self.ALLOWED_OPERATORS and isinstance(init_terms, list)
+        if not correct_types:
+            raise TypeError("Wrong type bud")
         
+        p = '^[a-z|A-Z|0-9|_]*$'
+        
+        for term in init_terms:
+            if isinstance(term, dict):
+                term = Condition(term)
+                term_str = term.condition_str
+                params = term.params
+            elif term in self.FIELDS:
+                term_str = term
+                params = []
+            elif isinstance(term, (list, tuple)):
+                term_str = f"({','.join(['?']*len(term))})"
+                params = [str(p) for p in term]
+            else:
+                term_str = '?'
+                params = [str(term)]
+            self.terms.append(term_str)
+            self.params += params
+        self.operator = f" {operator} "
 
-    if alias:
-        table_str += f" AS {alias}"
+        self.condition_str = f"({self.operator.join([term for term in self.terms])})"
+    
+    def __repr__(self):
+        return self.condition_str
 
-    if not main:
-        table_str += f" ON {'='.join(link)}"
+class End:
+    def __init__(self, end):
+        self.group = end.get("group", [])
+        self.order = end.get("order", {})
+        correct_iter_types = isinstance(self.group, list) and isinstance(self.order, dict)
+        if not correct_iter_types:
+            raise TypeError("Wrong type bud")
+        
+        self.fields = self.order.get("fields", [])
+        self.direction = str(self.order.get("direction", '')).upper()
+        self.limit = str(self.order.get("limit", ''))
 
-    return table_str
+        p = '^[a-z|A-Z|0-9|_]*$'
 
-def _make_condition(condition):
-    operator = f" {condition.get('operator')} "
-    terms = []
-    for term in condition.get("terms"):
-        if type(term) == dict:
-            term = _make_condition(term)
-        terms.append(term)
+        correct_types = isinstance(self.fields, list) and None not in [re.match(p, str(field)) for field in self.fields] and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
+        if not correct_types:
+            raise TypeError("Wrong type bud")
+        
+    def __repr__(self):
+        end_str = '\n'
+        if self.group:
+            end_str += f"GROUP BY {','.join(self.group)}"
 
-    condition_str = f"({operator.join([str(t) for t in terms])})"
-
-    return condition_str
-
-def _make_end(end):
-    group = end.get("group", '')
-    order = end.get("order", '')
-
-    end_str = '\n'
-    if group:
-        end_str += f"GROUP BY {','.join(group)}"
-
-    if order:
-        fields = order.get("fields")
-        direction = order.get("direction", '')
-        limit = order.get("limit")
-        if fields:
-            end_str += f"\nORDER BY {','.join(fields)} {direction}"
-        if limit:
-            end_str += f"\nLIMIT {limit}"
-    return end_str
+        if self.fields:
+            end_str += f"\nORDER BY {','.join(self.fields)} {self.direction}"
+        if self.limit:
+            end_str += f"\nLIMIT {self.limit}"
+        return end_str
 
 def make_select(query):
-    if not query:
-        return ''
-    fields = ",".join([_make_field(field) for field in query["fields"]])
-    main_table = _make_table(query['main_table'], main=True)
-    joins = "\n".join([_make_table(table) for table in query["tables"]])
-    conditions = "\nAND ".join([_make_condition(condition) for condition in query["conditions"]])
-    end = _make_end(query['end']) if query.get("end") else ''
+    try:
+        fields = ",".join([str(Field(field)) for field in query["fields"]])
+        main_table = str(Table(query['main_table'], is_main=True))
+        joins = "\n".join([str(Table(table)) for table in query["tables"]])
+        conditions = "\nAND ".join([str(Condition(condition)) for condition in query["conditions"]])
+        end = str(End(query['end'])) if query.get("end") else ''
+
+        params = []
+        for condition in query['conditions']:
+            params += Condition(condition).params
+    except (KeyError, TypeError) as e:
+        raise TypeError("YOU DONE MESSED UP A-ARON")
 
     query_str = f'''
     SELECT {fields} FROM {main_table} {joins} WHERE {conditions} {end}
     '''
-    return query_str
+    return query_str, params

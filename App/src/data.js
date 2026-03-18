@@ -2,7 +2,7 @@ import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm"
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import {DateTime} from "https://cdn.jsdelivr.net/npm/luxon@3.4.4/+esm";
 
-const API_URL = "http://psychotic-disco-production.up.railway.app"
+const API_URL = "https://psychotic-disco-production.up.railway.app"
 
 export function format(input_element, default_value=null, field=null) {
     let input = input_element.value;

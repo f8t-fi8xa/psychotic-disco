@@ -37,16 +37,17 @@ def handle_preflight():
         return '', 204
 
 @app.get("/test")
-@auth.login_required
 def test():
-    return 'test and more'
+    return 'test'
 
 @app.route('/myip')
+@auth.login_required
 def get_ip():
     import requests
     return requests.get('https://ifconfig.me').text
 
 @app.get("/api/last_updated")
+@auth.login_required
 def last_updated():
     conn = pool.get_connection()
     try:
@@ -57,18 +58,6 @@ def last_updated():
         return result
     finally:
         conn.close()
-
-@app.post("/api/create")
-@auth.login_required
-def create():
-    # with sqlite3.connect(db_path) as conn:
-    #     cur = conn.cursor()
-    #     tables = cur.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
-    #     for table in tables:
-    #         cur.execute(f'''TABLE IF EXISTS "{table[0]}"''')
-    #     conn.commit()
-    #     InitializeDB.Database(conn).make_tables()
-    return jsonify({"status": "success"})
 
 # update routes
 @app.post("/api/update")
@@ -135,6 +124,17 @@ def update_registers():
     return jsonify({"status": "success"})
 
 # get routes
+
+@app.post("/api/select")
+@auth.login_required
+def select():
+    query = request.get_json()
+    conn = pool.get_connection()
+    cur = conn.cursor(dictionary=True)
+
+    result = cur.execute(make_select(query)).fetchall()
+    conn.close()
+    return jsonify([dict(row) for row in result])
 
 @app.post("/api/search")
 @auth.login_required
@@ -362,7 +362,11 @@ def search():
     if grouping_value != "NULL":
         main_query["end"] = {"group": ["grouping_value"]}
 
-    product_result = cur.execute(f"WITH sale_interval AS ({make_select(sale_interval)}) {make_select(main_query)}").fetchall()
+    sale_interval_query_str, sale_interval_params = make_select(sale_interval)
+    main_query_str, main_params = make_select(main_query)
+    params = sale_interval_params + main_params
+
+    product_result = cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params).fetchall()
     conn.close()
     return jsonify([dict(row) for row in product_result])
 
@@ -373,18 +377,6 @@ def get_sales():
 
     conn = pool.get_connection()
     cur = conn.cursor(dictionary=True)
-
-    cur.execute('''
-    CREATE OR REPLACE VIEW intervals AS
-    SELECT
-    date,
-    DATE_FORMAT(FROM_UNIXTIME(date), '%Y-W%u') AS week,
-    DATE_FORMAT(FROM_UNIXTIME(date), '%Y-%m') AS month,
-    CONCAT(YEAR(FROM_UNIXTIME(date)), '-Q', QUARTER(FROM_UNIXTIME(date)) AS quarter,
-    YEAR(FROM_UNIXTIME(date)) AS year
-    FROM sales''')
-
-    conn.commit()
 
     inventory = data["inventory"]
     sales = data["sales"]
@@ -570,7 +562,11 @@ def get_sales():
     if grouping_value != "NULL":
         main_query["end"]["group"].append("grouping_value")
 
-    result = cur.execute(f"WITH sale_interval AS ({make_select(sale_interval)}) {make_select(main_query)}").fetchall()
+    sale_interval_query_str, sale_interval_params = make_select(sale_interval)
+    main_query_str, main_params = make_select(main_query)
+    params = sale_interval_params + main_params
+
+    result = cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params).fetchall()
     conn.close()
     return jsonify([dict(row) for row in result])
 

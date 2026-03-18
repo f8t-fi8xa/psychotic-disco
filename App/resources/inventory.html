@@ -3,6 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Control what info is sent in referrer -->
+    <meta name="referrer" content="no-referrer">
+
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- Content Security Policy - only load from your own domain and trusted CDNs -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net ;
+        connect-src 'self' https://psychotic-disco-production.up.railway.app;
+        style-src 'self';
+        object-src 'none';
+        base-uri 'self';
+    ">
     <link rel="stylesheet" href="style.css">
     <title>Inventory</title>
 </head>
@@ -299,7 +314,7 @@
         <div id="loading-screen">
             <div class="spinner"></div>
         </div>
-        <div style="display: none;" id="s-view"></div>
+        <div id="s-view"></div>
         <table id="i-view">
             <thead>
             <tr id="product-thr">
