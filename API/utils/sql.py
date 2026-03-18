@@ -29,8 +29,8 @@ class Table:
         self.link = table.get("link")
         self.is_main = bool(is_main)
 
-        correct_types = isinstance(self.link, tuple)
-        p = '^[a-z|A-Z|0-9|_]*$'
+        correct_types = isinstance(self.link, (tuple, list))
+        p = '^[a-zA-Z0-9_]*$'
         alpha_num_base = re.match(p, self.name) and re.match(p, self.alias) and re.match(p, self.join_type)
         if is_main:
             alpha_num = alpha_num_base
@@ -56,6 +56,14 @@ class Table:
             table_str += f" ON {'='.join(self.link)}"
 
         return table_str
+    
+def _validate_field(term: str = '', tables: list[str] = []):
+    if not tables:
+        return False
+
+    if not any([re.match(f'^{re.escape(table)}\\.[a-zA-Z0-9_]+$', term) for table in tables]):
+        return False
+    return True
 
 class Condition:
     ALLOWED_OPERATORS = {
@@ -66,10 +74,7 @@ class Condition:
     'LIKE', 'NOT LIKE',                    # like
     'BETWEEN', 'NOT BETWEEN'               # between
     }
-    FIELDS = {
-
-    }
-    def __init__(self, condition: dict):
+    def __init__(self, condition: dict, tables=[]):
         operator = str(condition.get('operator', '')).upper()
         self.terms = []
         self.params = []
@@ -79,14 +84,14 @@ class Condition:
         if not correct_types:
             raise TypeError("Wrong type bud")
         
-        p = '^[a-z|A-Z|0-9|_]*$'
+        
         
         for term in init_terms:
             if isinstance(term, dict):
                 term = Condition(term)
                 term_str = term.condition_str
                 params = term.params
-            elif term in self.FIELDS:
+            elif _validate_field(term, tables):
                 term_str = term
                 params = []
             elif isinstance(term, (list, tuple)):
@@ -116,7 +121,7 @@ class End:
         self.direction = str(self.order.get("direction", '')).upper()
         self.limit = str(self.order.get("limit", ''))
 
-        p = '^[a-z|A-Z|0-9|_]*$'
+        p = '^[a-zA-Z0-9_]*$'
 
         correct_types = isinstance(self.fields, list) and None not in [re.match(p, str(field)) for field in self.fields] and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
         if not correct_types:
@@ -136,14 +141,19 @@ class End:
 def make_select(query):
     try:
         fields = ",".join([str(Field(field)) for field in query["fields"]])
-        main_table = str(Table(query['main_table'], is_main=True))
+        main_table = Table(query['main_table'], is_main=True)
+        prefixes = [main_table.name, main_table.alias]
+        for table in query['tables']:
+            t = Table(query[table])
+            prefixes += [t.name, t.alias]
+        main_table = str(main_table)
         joins = "\n".join([str(Table(table)) for table in query["tables"]])
-        conditions = "\nAND ".join([str(Condition(condition)) for condition in query["conditions"]])
+        conditions = "\nAND ".join([str(Condition(condition, prefixes)) for condition in query["conditions"]])
         end = str(End(query['end'])) if query.get("end") else ''
 
         params = []
         for condition in query['conditions']:
-            params += Condition(condition).params
+            params += Condition(condition, prefixes).params
     except (KeyError, TypeError) as e:
         raise TypeError("YOU DONE MESSED UP A-ARON")
 
