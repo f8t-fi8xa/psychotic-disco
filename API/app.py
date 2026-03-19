@@ -19,7 +19,7 @@ pool = pooling.MySQLConnectionPool(
 )
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 auth = HTTPBasicAuth()
 
 
