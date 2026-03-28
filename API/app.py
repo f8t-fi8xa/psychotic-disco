@@ -110,10 +110,12 @@ def test():
     return 'test'
 
 @app.get('/myip')
-@cookies_needed
 def get_ip():
-    import requests
-    return requests.get('https://ifconfig.me').text
+    if tokens:
+        import requests
+        return requests.get('https://ifconfig.me').text
+    else:
+        return jsonify({"status": "failed"})
 
 @app.get("/api/last_updated")
 @cookies_needed
