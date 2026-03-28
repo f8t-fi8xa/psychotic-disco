@@ -220,36 +220,33 @@ document.querySelectorAll("#product-thr th").forEach((th, index) => {
     th.addEventListener("click", () => sort_table(i_view, index));
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-    cat1.value = "Merchandise";
-    document.querySelectorAll('.filter-header').forEach(header => {
-      header.addEventListener('click', () => {
-        const content = header.nextElementSibling;
-        content.style.display = content.style.display === 'block' ? 'none' : 'block';
-        header.classList.toggle("active");
-      });
+cat1.value = "Merchandise";
+document.querySelectorAll('.filter-header').forEach(header => {
+    header.addEventListener('click', () => {
+    const content = header.nextElementSibling;
+    content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    header.classList.toggle("active");
     });
-    const side_bounds = side.getBoundingClientRect();
-    const x = side_bounds.width - 60 - 10;
-    const y = 85;
-    plus_wrapper.style.top = y + "%";
-    plus_wrapper.style.left = x + "px";
+});
+const side_bounds = side.getBoundingClientRect();
+const x = side_bounds.width - 60 - 10;
+const y = 85;
+plus_wrapper.style.top = y + "%";
+plus_wrapper.style.left = x + "px";
 
-    const main_bounds = Object.fromEntries(
-        Object.entries(main.getBoundingClientRect().toJSON()).map(([k, v]) => ([k, v + "px"]))
-    );
-    loading_screen.style.display = "flex";
-    loading_screen.style.top = main_bounds.y;
-    loading_screen.style.left = main_bounds.x;
-    loading_screen.style.width = main_bounds.width;
-    loading_screen.style.height = main_bounds.height;
-    console.log(loading_screen.style);
-    update()
-    .catch(err => console.log(err))
-    .then(res => {
-        loading_screen.style.display = "none";
-        form.dispatchEvent(new Event("submit"));
-        toggle_dot.dispatchEvent(new Event("change"));
-    });
-    
+const main_bounds = Object.fromEntries(
+    Object.entries(main.getBoundingClientRect().toJSON()).map(([k, v]) => ([k, v + "px"]))
+);
+loading_screen.style.display = "flex";
+loading_screen.style.top = main_bounds.y;
+loading_screen.style.left = main_bounds.x;
+loading_screen.style.width = main_bounds.width;
+loading_screen.style.height = main_bounds.height;
+console.log(loading_screen.style);
+update()
+.catch(err => console.log(err))
+.then(res => {
+    loading_screen.style.display = "none";
+    form.dispatchEvent(new Event("submit"));
+    toggle_dot.dispatchEvent(new Event("change"));
 });
