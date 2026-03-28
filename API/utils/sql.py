@@ -27,16 +27,16 @@ class Table:
         self.name = str(table.get("name", ''))
         self.alias = str(table.get("alias", ''))
         self.join_type = str(table.get("join_type", '')).upper()
-        self.link = table.get("link")
+        self.link = table.get("link", '') #list or tuple
         self.is_main = bool(is_main)
-
+        
         correct_types = isinstance(self.link, (tuple, list)) if not is_main else True
         p = '^[a-zA-Z0-9_]*$'
         alpha_num_base = re.match(p, self.name) and re.match(p, self.alias) and re.match(p, self.join_type)
         if is_main:
             alpha_num = alpha_num_base
         elif correct_types and len(self.link) == 2:
-            alpha_num = alpha_num_base and re.match(p, self.link[0]) and re.match(p, self.link[1])
+            alpha_num = alpha_num_base and all([_validate_field(f) for f in self.link])
         else:
             alpha_num = False
         if not correct_types or not alpha_num:
@@ -125,7 +125,7 @@ class End:
 
         p = '^[a-zA-Z0-9_]*$'
 
-        correct_types = isinstance(self.fields, list) and None not in [re.match(p, str(field)) for field in self.fields] and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
+        correct_types = isinstance(self.fields, list) and all([_validate_field(field) for field in self.fields]) and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
         if not correct_types:
             print({"end": end})
             raise TypeError("Wrong type bud")
