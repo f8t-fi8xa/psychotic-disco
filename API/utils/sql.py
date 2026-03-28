@@ -146,7 +146,7 @@ def make_select(query):
         main_table = Table(query['main_table'], is_main=True)
         prefixes = [main_table.name, main_table.alias]
         for table in query['tables']:
-            t = Table(query[table])
+            t = Table(table)
             prefixes += [t.name, t.alias]
         main_table = str(main_table)
         fields = ",".join([str(Field(field, prefixes)) for field in query["fields"]])
