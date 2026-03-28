@@ -1,13 +1,22 @@
 import re
 
+def _validate_field(term: str, tables: list[str], fields: list[str]):
+    if not tables or not fields:
+        return False
+    if term.upper() == 'NULL':
+        return True
+    if term.lower() in fields:
+        return True
+    return any([re.match(f'^({re.escape(table)}\\.)?[a-zA-Z0-9_]+$', term) for table in tables])
+
 class Field:
-    def __init__(self, field: dict[str, str], tables=[]):
+    def __init__(self, field: dict[str, str], tables, fields):
         self.name = str(field.get("name", ''))
         self.func = str(field.get("func", ''))
         self.alias = str(field.get("alias", ''))
 
         p = '^[a-zA-Z0-9_]*$'
-        alpha_num = _validate_field(self.name, tables) and re.match(p, self.func) and re.match(p, self.alias)
+        alpha_num = _validate_field(self.name, tables, fields) and re.match(p, self.func) and re.match(p, self.alias)
         if not alpha_num:
             print({"field": field})
             raise TypeError("Wrong type bud")
@@ -23,20 +32,20 @@ class Field:
         return field_str
 
 class Table:
-    def __init__(self, table: dict, is_main: bool = False):
+    def __init__(self, table: dict, tables, fields, is_main: bool = False):
         self.name = str(table.get("name", ''))
         self.alias = str(table.get("alias", ''))
         self.join_type = str(table.get("join_type", '')).upper()
-        self.link = table.get("link")
+        self.link = table.get("link", '') #list or tuple
         self.is_main = bool(is_main)
-
+        
         correct_types = isinstance(self.link, (tuple, list)) if not is_main else True
         p = '^[a-zA-Z0-9_]*$'
         alpha_num_base = re.match(p, self.name) and re.match(p, self.alias) and re.match(p, self.join_type)
         if is_main:
             alpha_num = alpha_num_base
         elif correct_types and len(self.link) == 2:
-            alpha_num = alpha_num_base and re.match(p, self.link[0]) and re.match(p, self.link[1])
+            alpha_num = alpha_num_base and all([_validate_field(f, tables, fields) for f in self.link])
         else:
             alpha_num = False
         if not correct_types or not alpha_num:
@@ -55,17 +64,9 @@ class Table:
             table_str += f" AS {self.alias}"
 
         if not self.is_main:
-            table_str += f" ON {'='.join(self.link)}"
+            table_str += f" ON {self.link[0]} = {self.link[1]}"
 
         return table_str
-    
-def _validate_field(term: str = '', tables: list[str] = []):
-    if not tables:
-        return False
-
-    if not any([re.match(f'^{re.escape(table)}\\.[a-zA-Z0-9_]+$', term) for table in tables]):
-        return False
-    return True
 
 class Condition:
     ALLOWED_OPERATORS = {
@@ -76,11 +77,11 @@ class Condition:
     'LIKE', 'NOT LIKE',                    # like
     'BETWEEN', 'NOT BETWEEN'               # between
     }
-    def __init__(self, condition: dict, tables=[]):
+    def __init__(self, condition: dict, tables, fields):
         operator = str(condition.get('operator', '')).upper()
         self.terms = []
         self.params = []
-        init_terms = condition.get("terms")
+        init_terms = condition.get("terms", '')# list
 
         correct_types = operator in self.ALLOWED_OPERATORS and isinstance(init_terms, list)
         if not correct_types:
@@ -89,10 +90,10 @@ class Condition:
         
         for term in init_terms:
             if isinstance(term, dict):
-                term = Condition(term)
+                term = Condition(term, tables, fields)
                 term_str = term.condition_str
                 params = term.params
-            elif _validate_field(term, tables):
+            elif _validate_field(term, tables, fields):
                 term_str = term
                 params = []
             elif isinstance(term, (list, tuple)):
@@ -111,7 +112,7 @@ class Condition:
         return self.condition_str
 
 class End:
-    def __init__(self, end):
+    def __init__(self, end, tables, fields):
         self.group = end.get("group", [])
         self.order = end.get("order", {})
         correct_iter_types = isinstance(self.group, list) and isinstance(self.order, dict)
@@ -125,7 +126,13 @@ class End:
 
         p = '^[a-zA-Z0-9_]*$'
 
-        correct_types = isinstance(self.fields, list) and None not in [re.match(p, str(field)) for field in self.fields] and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
+        correct_types = all([
+            all([_validate_field(field, tables, fields) for field in self.group]),
+            isinstance(self.fields, list),
+            all([_validate_field(field, tables, fields) for field in self.fields]),
+            self.direction in ['', 'ASC', 'DESC'],
+            re.match('^[0-9]*$', self.limit)
+        ])
         if not correct_types:
             print({"end": end})
             raise TypeError("Wrong type bud")
@@ -142,24 +149,29 @@ class End:
         return end_str
 
 def make_select(query):
+    tables = [query.get('main_table', {}).get('name'), query.get('main_table', {}).get('alias')]
+    for t in query.get('tables', []):
+        tables += [t.get('name'), t.get('alias')]
+    field_aliases = []
     try:
-        main_table = Table(query['main_table'], is_main=True)
-        prefixes = [main_table.name, main_table.alias]
-        for table in query['tables']:
-            t = Table(table)
-            prefixes += [t.name, t.alias]
-        main_table = str(main_table)
-        fields = ",".join([str(Field(field, prefixes)) for field in query["fields"]])
-        joins = "\n".join([str(Table(table)) for table in query["tables"]])
-        conditions = "\nAND ".join([str(Condition(condition, prefixes)) for condition in query["conditions"]])
-        end = str(End(query['end'])) if query.get("end") else ''
+        for f in query["fields"]:
+            alias = f.get('alias')
+            if alias: 
+                field_aliases.append(alias)
+        main_table = str(Table(query['main_table'], tables, field_aliases, is_main=True))
+        fields = ",".join([str(Field(field, tables, field_aliases)) for field in query["fields"]])
+        joins = "\n".join([str(Table(table, tables, field_aliases)) for table in query["tables"]])
+        conditions = "\nAND ".join([str(Condition(condition, tables, field_aliases)) for condition in query["conditions"]])
+        end = str(End(query['end'], tables, field_aliases)) if query.get("end") else ''
 
         params = []
         for condition in query['conditions']:
-            params += Condition(condition, prefixes).params
+            params += Condition(condition, tables, field_aliases).params
     except (KeyError, TypeError) as e:
         print(query)
-        print(e)
+        print('==========')
+        print('tables:', tables)
+        print('field aliases:', field_aliases)
         raise e
         #raise TypeError("YOU DONE MESSED UP A-ARON")
 

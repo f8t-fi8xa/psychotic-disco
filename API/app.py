@@ -647,7 +647,7 @@ def get_sales():
                 ]}
             ],
             "end": {
-                "group": ["interval"]
+                "group": ["si.interval"]
             }
         }
 
