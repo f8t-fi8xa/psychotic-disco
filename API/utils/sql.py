@@ -159,7 +159,9 @@ def make_select(query):
             params += Condition(condition, prefixes).params
     except (KeyError, TypeError) as e:
         print(query)
-        raise TypeError("YOU DONE MESSED UP A-ARON")
+        print(e)
+        raise e
+        #raise TypeError("YOU DONE MESSED UP A-ARON")
 
     query_str = f'''
     SELECT {fields} FROM {main_table} {joins} WHERE {conditions} {end}
