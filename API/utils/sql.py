@@ -1,14 +1,15 @@
 import re
 
 class Field:
-    def __init__(self, field: dict[str, str]):
+    def __init__(self, field: dict[str, str], tables=[]):
         self.name = str(field.get("name", ''))
         self.func = str(field.get("func", ''))
         self.alias = str(field.get("alias", ''))
 
         p = '^[a-zA-Z0-9_]*$'
-        alpha_num = re.match(p, self.name) and re.match(p, self.func) and re.match(p, self.alias)
+        alpha_num = _validate_field(self.name, tables) and re.match(p, self.func) and re.match(p, self.alias)
         if not alpha_num:
+            print({"field": field})
             raise TypeError("Wrong type bud")
 
     def __repr__(self) -> str:
@@ -39,6 +40,7 @@ class Table:
         else:
             alpha_num = False
         if not correct_types or not alpha_num:
+            print({"table": table, "is_main": is_main})
             raise TypeError("Wrong type bud")
 
     def __repr__(self) -> str:
@@ -82,9 +84,8 @@ class Condition:
 
         correct_types = operator in self.ALLOWED_OPERATORS and isinstance(init_terms, list)
         if not correct_types:
+            print({"condition": condition, "tables": tables})
             raise TypeError("Wrong type bud")
-        
-        
         
         for term in init_terms:
             if isinstance(term, dict):
@@ -115,6 +116,7 @@ class End:
         self.order = end.get("order", {})
         correct_iter_types = isinstance(self.group, list) and isinstance(self.order, dict)
         if not correct_iter_types:
+            print({"end": end})
             raise TypeError("Wrong type bud")
         
         self.fields = self.order.get("fields", [])
@@ -125,6 +127,7 @@ class End:
 
         correct_types = isinstance(self.fields, list) and None not in [re.match(p, str(field)) for field in self.fields] and self.direction in ['', 'ASC', 'DESC'] and re.match('^[0-9]*$', self.limit)
         if not correct_types:
+            print({"end": end})
             raise TypeError("Wrong type bud")
         
     def __repr__(self):
@@ -140,13 +143,13 @@ class End:
 
 def make_select(query):
     try:
-        fields = ",".join([str(Field(field)) for field in query["fields"]])
         main_table = Table(query['main_table'], is_main=True)
         prefixes = [main_table.name, main_table.alias]
         for table in query['tables']:
             t = Table(query[table])
             prefixes += [t.name, t.alias]
         main_table = str(main_table)
+        fields = ",".join([str(Field(field, prefixes)) for field in query["fields"]])
         joins = "\n".join([str(Table(table)) for table in query["tables"]])
         conditions = "\nAND ".join([str(Condition(condition, prefixes)) for condition in query["conditions"]])
         end = str(End(query['end'])) if query.get("end") else ''
@@ -155,6 +158,7 @@ def make_select(query):
         for condition in query['conditions']:
             params += Condition(condition, prefixes).params
     except (KeyError, TypeError) as e:
+        print(query)
         raise TypeError("YOU DONE MESSED UP A-ARON")
 
     query_str = f'''

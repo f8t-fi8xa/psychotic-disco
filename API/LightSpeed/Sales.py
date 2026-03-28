@@ -23,12 +23,12 @@ class Sales:
     def update(self, append=True):
         print("Updating sales...")
 
-        self.cur.execute("SELECT cutoff FROM config")
-        c = self.cur.fetchone()
+        self.cur.execute("SELECT cutoff FROM config LIMIT 1")
+        c = self.cur.fetchall()
         cutoff = int(c[0]) if c else 0
         if append:
             self.cur.execute("SELECT version FROM sales ORDER BY version DESC LIMIT 1")
-            v = self.cur.fetchone()
+            v = self.cur.fetchall()
             last_version = v[0] if v else 0
         else:
             last_version = 0

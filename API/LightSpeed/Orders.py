@@ -24,13 +24,13 @@ class Orders:
     def update(self, append=True):
         print("Updating orders...")
         
-        self.cur.execute("SELECT cutoff FROM config")
-        c = self.cur.fetchone()
+        self.cur.execute("SELECT cutoff FROM config LIMIT 1")
+        c = self.cur.fetchall()
         cutoff = int(c[0]) if c else 0
 
         if append:
             self.cur.execute("SELECT version FROM orders ORDER BY version DESC LIMIT 1")
-            v = self.cur.fetchone()
+            v = self.cur.fetchall()
             init_version = int(v[0]) if v else 0
         else:
             init_version = 0
