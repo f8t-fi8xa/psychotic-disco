@@ -1,4 +1,5 @@
-
+import { check_creds } from "./auth.js";
+check_creds()
 import {sort_table, format, update, Field, FieldSet, reset_cache, update_parameters, load_table, load_graph} from "./data.js";
 
 const i_portal = document.getElementById("i-portal");
@@ -73,13 +74,13 @@ function date_format(day, month, year, type) {
     return date;
 }
 
-toggle_dot.addEventListener("change", event => {
+toggle_dot.addEventListener("change", () => {
     if (toggle_dot.checked) update_parameters({preferences: {radius: +radius.value}});
     else update_parameters({preferences: null});
     load_graph();
 })
 
-radius.addEventListener("change", event => {
+radius.addEventListener("change", () => {
     if (toggle_dot.checked) {
         update_parameters({preferences: {radius: +radius.value}});
         load_graph();
@@ -104,12 +105,12 @@ download.addEventListener("click", event => {
     a.remove();
 })
 
-i_portal.addEventListener("click", event => {
+i_portal.addEventListener("click", () => {
     i_view.style.display = "";
     s_view.style.display = "none";
 })
 
-sPortal.addEventListener("click", event => {
+sPortal.addEventListener("click", () => {
     i_view.style.display = "none";
     s_view.style.display = "block";
 })
