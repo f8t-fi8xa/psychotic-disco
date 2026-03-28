@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Control what info is sent in referrer -->
+    <meta name="referrer" content="no-referrer">
+
+    <!-- Prevent MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- Content Security Policy - only load from your own domain and trusted CDNs -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' https://cdn.jsdelivr.net ;
+        connect-src 'self' https://psychotic-disco-production.up.railway.app;
+        style-src 'self';
+        object-src 'none';
+        base-uri 'self';
+    ">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+</head>
+<body>
+    <form id="form">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button type="submit">Login</button>
+        <p id="error">The website is clearly under attack. Shutting down all servers...</p>
+    </form>
+    <script type="module" src="src/auth.js"></script>
+    <script type="module" src="src/login.js"></script>
+</body>
+</html>
