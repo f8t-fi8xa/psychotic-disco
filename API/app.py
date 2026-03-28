@@ -153,7 +153,10 @@ def update():
 def update_orders():
     conn = pool.get_connection()
     try:
+        print("Orders went")
         Orders(conn).update()
+    except:
+        print("Orders failed")
     finally:
         conn.close()
     return jsonify({"status": "success"})
@@ -163,7 +166,10 @@ def update_orders():
 def update_products():
     conn = pool.get_connection()
     try:
+        print("Products went")
         Products(conn).update()
+    except:
+        print("Products failed")
     finally:
         conn.close()
     return jsonify({"status": "success"})
@@ -173,7 +179,10 @@ def update_products():
 def update_sales():
     conn = pool.get_connection()
     try:
+        print("Sales did it")
         Sales(conn).update()
+    except:
+        print("Sales failed")
     finally:
         conn.close()
     return jsonify({"status": "success"})
@@ -183,7 +192,10 @@ def update_sales():
 def update_suppliers():
     conn = pool.get_connection()
     try:
+        print("Suppliers good job")
         Suppliers(conn).update()
+    except:
+        print("Suppliers failed")
     finally:
         conn.close()
     return jsonify({"status": "success"})
@@ -193,7 +205,10 @@ def update_suppliers():
 def update_registers():
     conn = pool.get_connection()
     try:
+        print("You guys are prolly good")
         Registers(conn).update()
+    except:
+        print("Registers failed, damn")
     finally:
         conn.close()
     return jsonify({"status": "success"})

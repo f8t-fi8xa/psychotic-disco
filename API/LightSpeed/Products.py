@@ -91,9 +91,9 @@ class Products:
     def update(self):
         print("Updating products...")
 
-        self.cur.execute("SELECT last_updated FROM config")
-        l = self.cur.fetchone()
-        last_updated = int(l[0]) if l else 0
+        self.cur.execute("SELECT last_updated FROM config LIMIT 1")
+        l = self.cur.fetchall()
+        last_updated = int(l[0][0]) if l and l[0] else 0
         last_version = 0
 
         batch = product_request.get(deleted=True)

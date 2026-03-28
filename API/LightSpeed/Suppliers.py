@@ -14,10 +14,10 @@ class Suppliers:
 
     def _extract_attributes(self, supplier):
         self.cur.execute("SELECT supplier_code FROM products WHERE supplier_id = %s LIMIT 1", supplier['id'])
-        c = self.cur.fetchone()
-        if not c:
+        c = self.cur.fetchall()
+        if not c or not c[0]:
             return None
-        code = c[0]
+        code = c[0][0]
         if code in deals:
             seller_type = deals[code]["seller_type"], 
             tier = deals[code]["tier"],
