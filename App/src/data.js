@@ -1,8 +1,9 @@
 import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
 import {DateTime} from "https://cdn.jsdelivr.net/npm/luxon@3.4.4/+esm";
+import { get_csrf, init_csrf, API_URL } from "./auth.js";
 
-const API_URL = "https://psychotic-disco-production.up.railway.app"
+await init_csrf()
 
 export function format(input_element, default_value=null, field=null) {
     let input = input_element.value;
@@ -111,7 +112,8 @@ export class Field {
 async function load(endpoint, params) {
     return (await fetch(`${API_URL}/${endpoint}`, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json", 'X-CSRFToken': get_csrf()},
+        credentials: 'include',
         body: JSON.stringify(params)
     })).json();
 }
@@ -247,8 +249,10 @@ export async function update() {
     return fetch(`${API_URL}/api/update`, {
         method: "POST",
         headers: {
-            "Accept": "application/json"
-        }
+            "Accept": "application/json", 
+            'X-CSRFToken': get_csrf()
+        },
+        credentials: 'include'
     })
 };
 

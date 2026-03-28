@@ -25,7 +25,12 @@ pool = pooling.MySQLConnectionPool(
 )
 
 app = Flask(__name__)
+
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+
 CORS(app, origins=os.getenv('ALLOWED_ORIGINS', 'http://localhost:3000'), supports_credentials=True)
 csrf = CSRFProtect(app)
 
@@ -110,12 +115,10 @@ def test():
     return 'test'
 
 @app.get('/myip')
+@cookies_needed
 def get_ip():
-    if tokens:
-        import requests
-        return requests.get('https://ifconfig.me').text
-    else:
-        return jsonify({"status": "failed"})
+    import requests
+    return requests.get('https://ifconfig.me').text
 
 @app.get("/api/last_updated")
 @cookies_needed

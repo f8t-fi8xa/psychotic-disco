@@ -1,6 +1,10 @@
 export const API_URL = "https://psychotic-disco-production.up.railway.app";
 let csrf_token = null;
 
+export function get_csrf() {
+    return csrf_token
+}
+
 export async function init_csrf() {
     const res = await fetch(`${API_URL}/api/csrf-token`, {credentials: 'include'});
     const data = await res.json();
