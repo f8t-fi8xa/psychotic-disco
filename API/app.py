@@ -451,7 +451,7 @@ def search():
         }
 
         if grouping_value != "NULL":
-            main_query["end"] = {"group": ["grouping_value"]}
+            main_query["end"] = {"group": ["si.grouping_value"]}
 
         sale_interval_query_str, sale_interval_params = make_select(sale_interval)
         main_query_str, main_params = make_select(main_query)
@@ -652,7 +652,7 @@ def get_sales():
         }
 
         if grouping_value != "NULL":
-            main_query["end"]["group"].append("grouping_value")
+            main_query["end"]["group"].append("si.grouping_value")
 
         sale_interval_query_str, sale_interval_params = make_select(sale_interval)
         main_query_str, main_params = make_select(main_query)
