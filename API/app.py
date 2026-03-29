@@ -456,7 +456,18 @@ def search():
         sale_interval_query_str, sale_interval_params = make_select(sale_interval)
         main_query_str, main_params = make_select(main_query)
         params = sale_interval_params + main_params
-        cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
+        try:
+            cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
+        except:
+            print(jsonify({
+                'status': 'FAILED',
+                'WITH query': sale_interval,
+                'WITH params': sale_interval_params,
+                'WITH query_str': sale_interval_query_str,
+                'MAIN query': main_query,
+                'MAIN params': main_params,
+                'MAIN query_str': main_query_str
+                }))
         product_result = cur.fetchall()
         return jsonify([dict(row) for row in product_result])
     finally:
@@ -657,7 +668,18 @@ def get_sales():
         sale_interval_query_str, sale_interval_params = make_select(sale_interval)
         main_query_str, main_params = make_select(main_query)
         params = sale_interval_params + main_params
-        cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
+        try:
+            cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
+        except:
+            print(jsonify({
+                'status': 'FAILED',
+                'WITH query': sale_interval,
+                'WITH params': sale_interval_params,
+                'WITH query_str': sale_interval_query_str,
+                'MAIN query': main_query,
+                'MAIN params': main_params,
+                'MAIN query_str': main_query_str
+                }))
         result = cur.fetchall()
         return jsonify([dict(row) for row in result])
     finally:
