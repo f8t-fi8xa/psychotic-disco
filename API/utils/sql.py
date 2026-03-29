@@ -78,7 +78,7 @@ class Condition:
     'BETWEEN', 'NOT BETWEEN'               # between
     }
     def __init__(self, condition: dict, tables, fields):
-        operator = str(condition.get('operator', '')).upper()
+        operator = str(condition.get('operator', '')).upper().strip()
         self.terms = []
         self.params = []
         init_terms = condition.get("terms", '')# list
@@ -178,6 +178,4 @@ def make_select(query):
     query_str = f'''
     SELECT {fields} FROM {main_table} {joins} WHERE {conditions} {end}
     '''
-    print(query_str)
-    print(params)
     return query_str, params

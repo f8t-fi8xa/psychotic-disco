@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, make_response
 from flask_cors import CORS
-from mysql.connector import pooling
+from mysql.connector import pooling, errors
 from dotenv import load_dotenv
 import os
 from LightSpeed import Orders, Products, Sales, Suppliers, Registers
@@ -236,6 +236,13 @@ def search():
     
     conn = pool.get_connection()
     cur = conn.cursor(dictionary=True)
+
+    sale_interval = None
+    sale_interval_params = None
+    sale_interval_query_str = None
+    main_query = None
+    main_params = None
+    main_query_str = None
     try:
         inventory = data["inventory"]
         sales = data["sales"]
@@ -459,6 +466,17 @@ def search():
         cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
         product_result = cur.fetchall()
         return jsonify([dict(row) for row in product_result])
+    except errors.Error as e:
+        print(jsonify({
+            'status': 'FAILED',
+            'WITH query': sale_interval,
+            'WITH params': sale_interval_params,
+            'WITH query_str': sale_interval_query_str,
+            'MAIN query': main_query,
+            'MAIN params': main_params,
+            'MAIN query_str': main_query_str
+            }))
+        raise e
     finally:
         conn.close()
 
@@ -469,6 +487,13 @@ def get_sales():
 
     conn = pool.get_connection()
     cur = conn.cursor(dictionary=True)
+
+    sale_interval = None
+    sale_interval_params = None
+    sale_interval_query_str = None
+    main_query = None
+    main_params = None
+    main_query_str = None
     try:
         inventory = data["inventory"]
         sales = data["sales"]
@@ -660,6 +685,17 @@ def get_sales():
         cur.execute(f"WITH sale_interval AS ({sale_interval_query_str}) {main_query_str}", params)
         result = cur.fetchall()
         return jsonify([dict(row) for row in result])
+    except errors.Error as e:
+        print(jsonify({
+            'status': 'FAILED',
+            'WITH query': sale_interval,
+            'WITH params': sale_interval_params,
+            'WITH query_str': sale_interval_query_str,
+            'MAIN query': main_query,
+            'MAIN params': main_params,
+            'MAIN query_str': main_query_str
+            }))
+        raise e
     finally:
         conn.close()
 
