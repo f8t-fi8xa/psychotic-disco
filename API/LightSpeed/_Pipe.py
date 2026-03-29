@@ -75,7 +75,7 @@ def put_sql(conn, attrs: dict, table: str):
             values
         )
         conn.commit()
-    except mysql.connector.InterfaceError as e:
+    except mysql.connector.Error as e:
         print({k: type(attrs[k]) for k in keys})
         traceback.print_exc()
 

@@ -117,7 +117,7 @@ class Products:
             batch = product_request.get(after=last_version, deleted=True)
         self._update_inventory()
 
-        self.cur.execute("UPDATE config SET last_updated = %s", int(time.time()))
+        #self.cur.execute("UPDATE config SET last_updated = %s", int(time.time()))
         self.conn.commit()
 
     ############################
