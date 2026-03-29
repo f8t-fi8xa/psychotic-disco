@@ -140,10 +140,19 @@ def last_updated():
 def update():
     conn = pool.get_connection()
     try:
-        Orders(conn).update()
-        Products(conn).update()
-        Sales(conn).update()
         Suppliers(conn).update()
+        Products(conn).update()
+        Orders(conn).update()
+        Sales(conn).update()
+
+        cur = conn.cursor()
+        cur.execute('''
+                    UPDATE suppliers AS su
+                    JOIN products AS p ON su.id = p.supplier_id
+                    SET su.code = p.supplier_code
+                    WHERE su.code IS NULL
+                    ''')
+        conn.commit()
     finally:
         conn.close()
     return jsonify({"status": "success"})
