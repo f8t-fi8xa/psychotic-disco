@@ -1,13 +1,13 @@
 import re
 
-def _validate_field(term: str, tables: list[str], fields: list[str]):
-    if not tables or not fields:
+def _validate_field(term, tables: list[str], fields: list[str]):
+    if not tables or not fields or not isinstance(term, str):
         return False
     if term.upper() == 'NULL':
         return True
-    if term.lower() in fields:
+    if term in fields:
         return True
-    return any([re.match(f'^({re.escape(table)}\\.)?[a-zA-Z0-9_]+$', term) for table in tables])
+    return any([re.match(f'^{re.escape(table)}\\.[a-zA-Z0-9_]+$', term) for table in tables])
 
 class Field:
     def __init__(self, field: dict[str, str], tables, fields):
