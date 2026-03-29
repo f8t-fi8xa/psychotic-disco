@@ -178,4 +178,6 @@ def make_select(query):
     query_str = f'''
     SELECT {fields} FROM {main_table} {joins} WHERE {conditions} {end}
     '''
+    print(query_str)
+    print(params)
     return query_str, params
