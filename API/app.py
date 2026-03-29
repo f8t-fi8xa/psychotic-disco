@@ -354,7 +354,7 @@ def search():
             ],
             "conditions": [
                 {"operator": "OR", "terms": [
-                    {"operator": "=", "terms": ["sp.status", "'CONFIRMED'"]}, 
+                    {"operator": "=", "terms": ["sp.status", "CONFIRMED"]}, 
                     {"operator": "IS", "terms": ["sp.status", "NULL"]}
                 ]},
                 {"operator": "IS", "terms": ["p.deleted_at", "NULL"]},
@@ -383,7 +383,7 @@ def search():
                 {"operator": "OR", "terms": [
                     supplier, 
                     {"operator": "AND", "terms": [
-                        {"operator": "=", "terms": [supplier['terms'][0], '"%%"']}, 
+                        {"operator": "=", "terms": [supplier['terms'][0], "%%"]}, 
                         {"operator": "IS", "terms": ["p.supplier_id", "NULL"]}
                     ]}
                 ]},
@@ -557,8 +557,8 @@ def get_sales():
                 {"name": "registers", "alias": "r", "link": ("s.register_id", "r.id")}
             ],
             "conditions": [
-                {"operator": "=", "terms": ["sp.status", "'CONFIRMED'"]}, 
-                {"operator": "!=", "terms": ["su.name", "'The Galleryat57'"]},
+                {"operator": "=", "terms": ["sp.status", "CONFIRMED"]}, 
+                {"operator": "!=", "terms": ["su.name", "The Galleryat57"]},
                 {"operator": "IS", "terms": ["p.deleted_at", "NULL"]},
                 {"operator": "OR", "terms": [
                     {"operator": ">=", "terms": ["s.date", date_min]}, 
@@ -585,7 +585,7 @@ def get_sales():
                 {"operator": "OR", "terms": [
                     supplier, 
                     {"operator": "AND", "terms": [
-                        {"operator": "=", "terms": [supplier['terms'][0], "'%%'"]}, 
+                        {"operator": "=", "terms": [supplier['terms'][0], "%%"]}, 
                         {"operator": "IS", "terms": ["p.supplier_id", "NULL"]}
                     ]}
                 ]},
@@ -601,8 +601,8 @@ def get_sales():
                     {"operator": "=", "terms": [online, -1]}
                 ]},
                 {"operator": "OR", "terms": [
-                    {"operator": "=", "terms": ["r.id", f"'{register}'"]},
-                    {"operator": "=", "terms": [f"'{register}'", "'All'"]}
+                    {"operator": "=", "terms": ["r.id", register]},
+                    {"operator": "=", "terms": [register, "All"]}
                 ]}
             ],
             "end": {
