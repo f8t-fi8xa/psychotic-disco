@@ -174,7 +174,7 @@ form.addEventListener("submit", event => {
             revenue_min: +format(revenueMin, -1*1e5),
             revenue_max: +format(revenueMax, 1e5),
             register: register.value,
-            interval: interval.value,
+            interval: `iv.${interval.value}`,
             metric: metric.value,
             grouping: grouping.value
         }

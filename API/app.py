@@ -383,7 +383,7 @@ def search():
                 {"operator": "OR", "terms": [
                     supplier, 
                     {"operator": "AND", "terms": [
-                        {"operator": "=", "terms": [supplier['terms'][0]['terms'][0], '"%%"']}, 
+                        {"operator": "=", "terms": [supplier['terms'][0], '"%%"']}, 
                         {"operator": "IS", "terms": ["p.supplier_id", "NULL"]}
                     ]}
                 ]},
@@ -585,7 +585,7 @@ def get_sales():
                 {"operator": "OR", "terms": [
                     supplier, 
                     {"operator": "AND", "terms": [
-                        {"operator": "=", "terms": [supplier['terms'][0]['terms'][0], "'%%'"]}, 
+                        {"operator": "=", "terms": [supplier['terms'][0], "'%%'"]}, 
                         {"operator": "IS", "terms": ["p.supplier_id", "NULL"]}
                     ]}
                 ]},
