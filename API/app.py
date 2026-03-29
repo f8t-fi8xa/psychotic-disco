@@ -141,12 +141,14 @@ def last_updated():
 def update():
     conn = pool.get_connection()
     try:
+        cur = conn.cursor()
+        cur.execute('SET FOREIGN_KEY_CHECKS = 0')
         Suppliers(conn).update()
         Products(conn).update()
         Orders(conn).update()
         Sales(conn).update()
+        cur.execute('SET FOREIGN_KEY_CHECKS = 1')
 
-        cur = conn.cursor()
         cur.execute('''
                         UPDATE suppliers AS su 
                         JOIN products AS p ON su.id = p.supplier_id 
