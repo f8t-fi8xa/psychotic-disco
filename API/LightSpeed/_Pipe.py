@@ -1,5 +1,4 @@
 import os
-from flask import jsonify
 from dotenv import load_dotenv
 import mysql.connector
 import requests
@@ -77,8 +76,8 @@ def put_sql(conn, attrs: dict, table: str):
         )
         conn.commit()
     except mysql.connector.Error as e:
-        print(jsonify(attrs))
-        raise e
+        print(attrs)
+        traceback.print_exc()
 
 
 def put_sql_many(conn, attrs: list, table: str):
