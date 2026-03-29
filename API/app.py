@@ -3,6 +3,7 @@ from flask_cors import CORS
 from mysql.connector import pooling, errors
 from dotenv import load_dotenv
 import os
+import json
 from LightSpeed import Orders, Products, Sales, Suppliers, Registers
 from utils.sql import make_select
 import secrets
@@ -147,12 +148,24 @@ def update():
 
         cur = conn.cursor()
         cur.execute('''
-                    UPDATE suppliers AS su
-                    JOIN products AS p ON su.id = p.supplier_id
-                    SET su.code = p.supplier_code
-                    WHERE su.code IS NULL
-                    ''')
+                        UPDATE suppliers AS su 
+                        JOIN products AS p ON su.id = p.supplier_id 
+                        SET su.code = p.supplier_code 
+                        WHERE su.code IS NULL
+                        ''')
         conn.commit()
+
+        with open(os.path.join('resources', 'Deals.json'), 'r') as file:
+            deals = [
+                [v.get('seller_type'), v.get('tier'), v.get('deal_type'), v.get('deal'), k]
+                for k,v in json.load(file).items()
+            ]
+            cur.executemany('''
+                            UPDATE suppliers AS su 
+                            SET su.seller_type = %s, su.tier = %s, su.deal_type = %s, su.deal = %s 
+                            WHERE su.code = %s
+                            ''', deals)
+            conn.commit()
     finally:
         conn.close()
     return jsonify({"status": "success"})

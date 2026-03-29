@@ -97,10 +97,10 @@ class Condition:
                 term_str = term
                 params = []
             elif isinstance(term, (list, tuple)):
-                term_str = f"({','.join(['?']*len(term))})"
+                term_str = f"({','.join(['%s']*len(term))})"
                 params = [p for p in term]
             else:
-                term_str = '?'
+                term_str = '%s'
                 params = [term]
             self.terms.append(term_str)
             self.params += params
