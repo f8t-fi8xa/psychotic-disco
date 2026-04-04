@@ -13,8 +13,11 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_wtf.csrf import CSRFProtect, generate_csrf
+import requests
 
 load_dotenv()
+
+ROOT_DIR = '' if os.getenv('ALLOWED_ORIGINS') else 'API'
 
 pool = pooling.MySQLConnectionPool(
     pool_size=5,
@@ -143,10 +146,10 @@ def update():
     try:
         cur = conn.cursor()
         cur.execute('SET FOREIGN_KEY_CHECKS = 0')
-        Suppliers(conn).update()
-        Products(conn).update()
-        Orders(conn).update()
-        Sales(conn).update()
+        Suppliers(conn, cur).update()
+        Products(conn, cur).update()
+        Orders(conn, cur).update()
+        Sales(conn, cur).update()
         cur.execute('SET FOREIGN_KEY_CHECKS = 1')
 
         cur.execute('''
@@ -157,7 +160,7 @@ def update():
                         ''')
         conn.commit()
 
-        with open(os.path.join('resources', 'Deals.json'), 'r') as file:
+        with open(os.path.join(ROOT_DIR, 'resources', 'Deals.json'), 'r') as file:
             deals = [
                 [v.get('seller_type'), v.get('tier'), v.get('deal_type'), v.get('deal'), k]
                 for k,v in json.load(file).items()

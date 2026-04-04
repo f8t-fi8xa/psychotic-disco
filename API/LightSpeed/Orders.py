@@ -3,9 +3,9 @@ from . import _Pipe as Pipe
 order_request = Pipe.Request("consignments")
 
 class Orders:
-    def __init__(self, conn):
+    def __init__(self, conn, cur=None):
         self.conn = conn
-        self.cur = conn.cursor()
+        self.cur = conn.cursor() if cur is None else cur
 
     def _extract_attributes(self, order):
         attrs = {
@@ -64,16 +64,21 @@ class Orders:
     def _extract_product_attributes(self, order_products, order_id):
         attrs = []
         for product in order_products:
-            attrs.append({
-                "order_id": order_id,
-                "product_id": product["product_id"],
-                "count": product["count"],
-                "status": product['status']
-            })
+            try:
+                attrs.append({
+                    "order_id": order_id,
+                    "product_id": product["product_id"],
+                    "count": product["count"],
+                    "status": product['status']
+                })
+            except TypeError as e:
+                print(product)
+                raise e
         return attrs
 
     def _update_order_products(self, init_version, cutoff):
-        self.cur.execute("SELECT id FROM orders WHERE version > %s AND date > %s", init_version, cutoff)
+        print("Updating order products...")
+        self.cur.execute("SELECT id FROM orders WHERE version > %s AND date > %s", [init_version, cutoff])
         ids = self.cur.fetchall()
 
         for id in ids:

@@ -59,7 +59,7 @@ def seconds(iso_str: str):
 # SQL methods
 
 
-def put_sql(conn, attrs: dict, table: str):
+def put_sql(conn, attrs: dict, table: str, duplicate: list[str] = []):
     cur = conn.cursor()
     if attrs is None:
         return
@@ -88,11 +88,14 @@ def put_sql_many(conn, attrs: list, table: str):
     keys = list(attrs[0].keys())
 
     values = [list(a.values()) for a in attrs]
-
-    cur.executemany(
-        f'''
-        INSERT INTO {table} ({",".join(keys)}) VALUES ({','.join(['%s'] * len(keys))}) 
-        ON DUPLICATE KEY UPDATE {','.join([f"{k} = VALUES({k})" for k in keys])}''',
-        values
-    )
-    conn.commit()
+    try:
+        cur.executemany(
+            f'''
+            INSERT INTO {table} ({",".join(keys)}) VALUES ({','.join(['%s'] * len(keys))}) 
+            ON DUPLICATE KEY UPDATE {','.join([f"{k} = VALUES({k})" for k in keys])}''',
+            values
+        )
+        conn.commit()
+    except mysql.connector.Error as e:
+        print(attrs)
+        traceback.print_exc()

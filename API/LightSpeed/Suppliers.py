@@ -1,16 +1,11 @@
 from . import _Pipe as Pipe
-import json
-import os
 
 supplier_request = Pipe.Request("suppliers")
 
-with open(os.path.join('resources', 'Deals.json'), 'r') as file:
-    deals = json.load(file)
-
 class Suppliers:
-    def __init__(self, conn):
+    def __init__(self, conn, cur=None):
         self.conn = conn
-        self.cur = conn.cursor()
+        self.cur = conn.cursor() if cur is None else cur
 
     def _extract_attributes(self, supplier):
         attrs = {

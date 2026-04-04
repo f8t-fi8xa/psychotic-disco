@@ -3,9 +3,9 @@ from . import _Pipe as Pipe
 register_request = Pipe.Request("registers")
 
 class Registers:
-    def __init__(self, conn):
+    def __init__(self, conn, cur=None):
         self.conn = conn
-        self.cur = conn.cursor()
+        self.cur = conn.cursor() if cur is None else cur
 
     def _extract_attributes(self, register):
         attrs = {

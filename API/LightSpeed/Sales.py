@@ -3,9 +3,9 @@ from . import _Pipe as Pipe
 sale_request = Pipe.Request("sales")
 
 class Sales:
-    def __init__(self, conn):
+    def __init__(self, conn, cur=None):
         self.conn = conn
-        self.cur = conn.cursor()
+        self.cur = conn.cursor() if cur is None else cur
     
     def _extract_attributes(self, sale):
         attrs = {
@@ -39,7 +39,7 @@ class Sales:
 
             if Pipe.seconds(batch[-1]["sale_date"]) > cutoff:
 
-                for i, sale in enumerate(batch):
+                for sale in batch:
                     if Pipe.seconds(sale["sale_date"]) > cutoff:
                         sale_attrs = self._extract_attributes(sale)
                         product_attributes = self._extract_product_attributes(sale)

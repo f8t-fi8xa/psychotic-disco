@@ -5,9 +5,9 @@ product_request = Pipe.Request("products")
 inventory_request = Pipe.Request("inventory")
 
 class Products:
-    def __init__(self, conn):
+    def __init__(self, conn, cur=None):
         self.conn = conn
-        self.cur = conn.cursor()
+        self.cur = conn.cursor() if cur is None else cur
     
     def _extract_attributes(self, product):
         if product['sku'] == 'vend-internal-gift-card':
@@ -106,8 +106,9 @@ class Products:
                     if product['source'] == 'USER' and (product['has_inventory'] == 1 or product['sku'] == 'vend-internal-gift-card'):
                         attrs = self._extract_attributes(product)
                         Pipe.put_sql(self.conn, attrs, "products")
-                        variant_attr_list = self._extract_variant_attributes(product)
-                        Pipe.put_sql_many(self.conn, variant_attr_list, "product_variants")
+                        if attrs['has_variants']:
+                            variant_attr_list = self._extract_variant_attributes(product)
+                            Pipe.put_sql_many(self.conn, variant_attr_list, "product_variants")
 
                     elif product['source'] not in ['INTEGRATION-SYSTEM', 'SAMPLE', 'B2B_NUORDER']:
                         attrs = self._extract_item_attributes(product)
@@ -117,7 +118,7 @@ class Products:
             batch = product_request.get(after=last_version, deleted=True)
         self._update_inventory()
 
-        #self.cur.execute("UPDATE config SET last_updated = %s", int(time.time()))
+        self.cur.execute("UPDATE config SET last_updated = %s", [int(time.time())])
         self.conn.commit()
 
     ############################
@@ -147,6 +148,7 @@ class Products:
         return attrs
 
     def _update_inventory(self):
+        print("Updating inventory...")
         batch = inventory_request.get()
 
         while len(batch) > 0:
