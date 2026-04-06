@@ -17,6 +17,8 @@ import requests
 
 load_dotenv()
 
+print(generate_password_hash('Gallery'))
+
 ROOT_DIR = '' if os.getenv('ALLOWED_ORIGINS') else 'API'
 
 pool = pooling.MySQLConnectionPool(
@@ -40,21 +42,22 @@ csrf = CSRFProtect(app)
 
 limiter = Limiter(app=app, key_func=get_remote_address)
 
-tokens = {}
-users = {
-    os.getenv("USER_0"): generate_password_hash(os.getenv("PASSWORD_0", "oh fuck"))
-}
-
 #security/https stuff
 
 def verify_token(token):
-    entry = tokens.get(token)
+    conn = pool.get_connection()
+    cur = conn.cursor(dictionary=True)
+    cur.execute('SELECT * FROM tokens WHERE token = %s', [token])
+    res = cur.fetchall()
+    entry = res[0] if res else None
     if not entry:
         return None
-    if entry['expires'] < time.time():
-        tokens.pop(token)
+    if entry.get('expires') < time.time():
+        cur.execute('DELETE FROM tokens WHERE token = %s', [token])
+        conn.commit()
         return None
-    return entry['user']
+    conn.close()
+    return entry.get('user')
 
 def cookies_needed(f):
     @wraps(f)
@@ -76,13 +79,22 @@ def csrf_token():
 @limiter.limit('5 per minute')
 def login():
     data = request.get_json()
-    username = users.get(data.get('username'), '')
-    if not check_password_hash(username, data.get('password', '')):
+    username = data.get('username', '')
+
+    conn = pool.get_connection()
+    cur = conn.cursor(dictionary=True)
+
+    cur.execute('SELECT * FROM users WHERE username = %s', [username])
+    res = cur.fetchall()
+    pw_hash = res[0]['password'] if res else ''
+
+    if not check_password_hash(pw_hash, data.get('password', '')):
         return jsonify({'error': 'Invalid Credentials'}), 401
     
     token = secrets.token_hex(32)
-    tokens[token] = {'user': data['username'], 'expires': time.time() + 60*60*24}
-
+    cur.execute('INSERT INTO tokens(token, user, expires) VALUES(%s, %s, %s)', [token, username, time.time() + 60*60*24])
+    conn.commit()
+    conn.close()
     response = make_response(jsonify({"message": 'logged in successfully'}))
     response.set_cookie(
         key='auth_token',
@@ -95,8 +107,12 @@ def login():
 
 @app.post("/api/logout")
 def logout():
-    token = request.cookies.get('auth_token')
-    tokens.pop(token, None)
+    conn = pool.get_connection()
+    cur = conn.cursor()
+
+    cur.execute('DELETE FROM tokens WHERE token = %s', [request.cookies.get('auth_token')])
+    conn.commit()
+    conn.close()
     response = make_response(jsonify({'message': 'logged out'}))
     response.delete_cookie('auth_token', samesite='None', secure=True)
     return response
@@ -104,8 +120,13 @@ def logout():
 @app.get("/api/me")
 @cookies_needed
 def me():
-    token = request.cookies['auth_token']
-    return jsonify({'user': tokens[token]['user']})
+    conn = pool.get_connection()
+    cur = conn.cursor()
+
+    cur.execute('SELECT user FROM tokens WHERE token = %s', [request.cookies['auth_token']])
+    res = cur.fetchall()
+    conn.close()
+    return jsonify({'user': res[0][0]})
 
 @app.before_request
 def handle_preflight():

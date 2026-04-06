@@ -5,7 +5,7 @@ headers = {
         "content-type": "application/json",
     }
 
-json = {}
+json = {"username": 'Admin', 'password': 'Gallery'}
 
 if __name__ == "__main__":
-    requests.post(r"http://localhost:5000/api/update", json=json, headers=headers)
+    requests.post(r"http://localhost:5000/api/login", json=json, headers=headers)

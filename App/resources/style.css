@@ -23,6 +23,14 @@ body {
     background-color: #f1f2f7;
 }
 
+.view {
+    display: block;
+}
+
+.view--inactive {
+    display: none;
+}
+
 #i-view thead {
     background-color: #949494;
     border-bottom: 1px solid #b9b9b9;
@@ -126,6 +134,10 @@ form {
     color: #365b85;
     background-color: #989bae;
     align-items: center;
+}
+
+.filter-header .active::after {
+    display: block;
 }
 
 .arrow-icon {
@@ -271,7 +283,7 @@ button:hover {
 }
 
 #loading-screen {
-    display: flex;
+    display: none;
     background-color: white;
     position: fixed;
     z-index: 10;
@@ -295,4 +307,3 @@ button:hover {
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
-  
